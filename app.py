@@ -12,12 +12,11 @@ import math
 import time
 import cv2
 
+
 X = deque(maxlen=20)
 X.append(1)
 Y = deque(maxlen=20)
 Y.append(1)
-
-
 
 app = dash.Dash(__name__)
 app.layout = html.Div(
