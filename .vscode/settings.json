@@ -1,4 +1,12 @@
 {
     "python.pythonPath": "C:\\ProgramData\\Anaconda3\\python.exe",
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--extension-pkg-whitelist=cv2"
+    ],
+    "python.dataScience.sendSelectionToInteractiveWindow": true,
+    "python.linting.pylintArgs": [
+        "--load-plugins=pylint_django"
+    ]
+
 }

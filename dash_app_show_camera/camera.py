@@ -21,13 +21,13 @@ class VideoCamera(object):
 
     def get_frame(self):
         success, image = self.video.read()
+        frame_rate = self.video.get(5)
         image, threshold = detection.detection(success,image)
         ret, jpeg = cv2.imencode('.jpg',image)
         ret2, jpeg2 = cv2.imencode('.jpg',threshold)
         return jpeg.tobytes(), jpeg2.tobytes()
 
 def gen(camera):
-    
     while True:
         frame, threshold = camera.get_frame()
         yield (b'--frame\r\n'

@@ -6,6 +6,8 @@ import math
 import time
 import plotly.plotly as py
 import plotly.graph_objs as go
+import app
+import matplotlib.pyplot as plt
 
 def edge_floc(cnt, count):
     cv2.drawContours(roi, [cnt], -1, (0, 0, 255), 3)
@@ -16,6 +18,7 @@ def ractangle_floc(cnt, count):
     if area < 3000:
         count = count +1
         cv2.rectangle(roi, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        #print(area)
     return count
 
 def circle_floc(cnt, count):
@@ -38,6 +41,7 @@ data = []
 start_datetime = datetime.datetime.now().strftime("%H"+"%M"+"%S")
 start_time = time.time()
 start = math.floor(start_time)
+
 
 while True:
     ret, frame = cap.read()
@@ -75,6 +79,11 @@ while True:
         # Add data time and count in Data table
         data.append([date_time.strftime("%X"),int(count)])
         start = current
+        data_array = np.array(data)
+
+        #df = pd.DataFrame(data=data_array[:,0:2],columns=['Time','Number_of_Floc'])
+        #df.to_csv('data.csv')
+
         #print(date_time.strftime("%X"))
 
     # Show Text on Display
@@ -96,14 +105,14 @@ while True:
     key = cv2.waitKey(30)
     if key == 27:
         break
-
+'''
 data = np.array(data)
 
 df = pd.DataFrame(data=data[:,0:2],columns=['Time','Number_of_Floc'])
 
 print(df)
 
-#df.to_csv('data.csv')
-
+df.to_csv('data.csv')
+'''
 cap.release()
 cv2.destroyAllWindows()

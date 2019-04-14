@@ -6,6 +6,7 @@ import math
 import time
 import plotly.plotly as py
 import plotly.graph_objs as go
+import csv
 
 def edge_floc(roi, cnt, count):
     cv2.drawContours(roi, [cnt], -1, (0, 0, 255), 3)
@@ -32,15 +33,9 @@ def nothing(x):
 
 def detection(ret,frame):
     count = 0
-    data = []
-
-    start_time = time.time()
-    start = math.floor(start_time)
-
     roi = frame
     rows, cols, _ = roi.shape
-    date_time = datetime.datetime.now()
-
+    
     # Convert BGR to Gray and Filtering
     gray_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
     gray_roi = cv2.GaussianBlur(gray_roi, (7, 7), 0)
@@ -60,14 +55,17 @@ def detection(ret,frame):
     for cnt in contours:
         count = ractangle_floc(roi,cnt, count)
 
-    elapsed_time = int(time.time() - start_time)
+    date_time = datetime.datetime.now()
 
-    current = math.floor(time.time())
-    if (current != start):
-        # Add data time and count in Data table
-        data.append([date_time.strftime("%X"),int(count)])
-        start = current
-        print(count)
-        print(date_time.strftime("%X"))
-    
+    time_t = date_time.strftime("%X")
+    with open('data.txt', 'r') as textFile:
+        lines = textFile.read().splitlines()
+        last_line = lines[-1].split(',')
+        if(last_line[0] != time_t):
+            with open('data.txt', 'a') as textFile_w:
+                textFile_w.write(time_t)
+                textFile_w.write(','+str(count)+'\n')
+            textFile_w.close()
+    textFile.close()
+        
     return roi, threshold
