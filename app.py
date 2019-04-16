@@ -35,8 +35,7 @@ app.layout = html.Div(
               [Input('interval-component', 'n_intervals')]
 )
 def update_graph_scatter(count):
-    data = pd.read_csv('data.csv')
-    '''
+
     X.append(X[-1]+1)
     Y.append(count)
     
@@ -48,26 +47,14 @@ def update_graph_scatter(count):
             )
 
     return {
-        'data': [data],'layout' : go.Layout(xaxis=dict(range=[min(X),max(X)]),
-                                                yaxis=dict(range=[min(Y),max(Y)]),)}
-    '''
-    return {
-        'data':[{
-            'x':data.Time,
-            'y':data.Number_of_Floc,
-            'line':{
-                'width':3,
-            }
-        }],
-        'layout':{
-            'margin':{
-                'l':30,
-                'r':20,
-                'b':30,
-                't':20
-            }
-        }
-    }
+        'data': [data],
+        'layout' : go.Layout(
+            xaxis=dict(
+                range=[min(X),max(X)]),
+            yaxis=dict(
+                range=[min(Y),max(Y)]),)}
+    
+
 if __name__ == '__main__':
     app.run_server(debug=True)
     

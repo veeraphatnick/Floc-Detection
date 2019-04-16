@@ -10,7 +10,7 @@ import csv
 
 def edge_floc(roi, cnt, count):
     cv2.drawContours(roi, [cnt], -1, (0, 0, 255), 3)
-    
+
 def ractangle_floc(roi, cnt, count):
     (x, y, w, h) = cv2.boundingRect(cnt)
     area = w*h
@@ -19,20 +19,24 @@ def ractangle_floc(roi, cnt, count):
         cv2.rectangle(roi, (x, y), (x + w, y + h), (255, 0, 0), 2)
     return count
 
-def circle_floc(roi, cnt, count):
+def circle_floc(roi, cnt, count, floc_size):
     (x,y),radius = cv2.minEnclosingCircle(cnt)
     center = (int(x),int(y))
     radius = int(radius)
     area = math.pi*radius**2
     if area < 3000:
         count = count+1
-        cv2.circle(roi,center,radius,(0,255,0),2)
+        cv2.circle(roi,center,radius,(0,0,255),2)
+        floc_size += area
+    
+    return count, floc_size
 
 def nothing(x):
     pass
 
 def detection(ret,frame):
     count = 0
+    floc_size = 0 
     roi = frame
     rows, cols, _ = roi.shape
     
@@ -53,8 +57,13 @@ def detection(ret,frame):
 
     # Drew Contours
     for cnt in contours:
-        count = ractangle_floc(roi,cnt, count)
+        count,floc_size = circle_floc(roi, cnt, count, floc_size)
 
+    if(count != 0):
+        avg_floc_size = floc_size/count
+    else:
+        avg_floc_size = 0
+            
     date_time = datetime.datetime.now()
 
     time_t = date_time.strftime("%X")
@@ -64,7 +73,8 @@ def detection(ret,frame):
         if(last_line[0] != time_t):
             with open('data.txt', 'a') as textFile_w:
                 textFile_w.write(time_t)
-                textFile_w.write(','+str(count)+'\n')
+                textFile_w.write(','+str(count))
+                textFile_w.write(','+str(int(avg_floc_size))+'\n')
             textFile_w.close()
     textFile.close()
         

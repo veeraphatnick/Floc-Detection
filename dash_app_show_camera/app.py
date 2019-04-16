@@ -3,11 +3,16 @@ import dash
 from dash.dependencies import Output, Input
 import dash_core_components as dcc
 import dash_html_components as html
+import plotly.graph_objs as go
+import plotly
+from collections import deque
 
 from flask import Flask, Response
 import pandas as pd 
 
-
+X = deque(maxlen=100)
+X.append(1)
+Y = deque(maxlen=2000)
 
 server = Flask(__name__)
 app = dash.Dash(__name__, server=server)
@@ -40,30 +45,35 @@ def update_graph_scatter(count):
     data_list = []
     data_time = []
     count = []
+    data_size = []
+
     with open("data.txt") as f :
         for line in f :
             data_list.append([str(n) for n in line.strip().split(',')])
+    
     for d in data_list:
         data_time.append(d[0])
         count.append(d[1])
+        data_size.append(d[2])
+
+    count_line = go.Scatter(
+            x=data_time,
+            y=count,
+            name='Count',
+            
+    )
+    size_line = go.Scatter(
+            x=data_time,
+            y=data_size,
+            name='Size',
+            yaxis='y2'
+    )
+    data = [count_line,size_line]
     
     return {
-        'data':[{
-            'x':data_time,
-            'y':count,
-            'line':{
-                'width':3,
-            }
-        }],
-        'layout':{
-            'margin':{
-                'l':30,
-                'r':20,
-                'b':30,
-                't':20
-            }
-        }
+        'data':[count_line],
     }
-        
+    
+
 if __name__ == '__main__':
     app.run_server(debug=True)

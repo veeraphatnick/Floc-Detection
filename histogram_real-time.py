@@ -6,9 +6,9 @@ import cv2
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file',
     help='Path to video file (if not using camera)')
-parser.add_argument('-c', '--color', type=str, default='gray',
+parser.add_argument('-c', '--color', type=str, default='rgb',
     help='Color space: "gray" (default) or "rgb"')
-parser.add_argument('-b', '--bins', type=int, default=16,
+parser.add_argument('-b', '--bins', type=int, default=256,
     help='Number of bins per channel (default 16)')
 parser.add_argument('-w', '--width', type=int, default=0,
     help='Resize video to specified width in pixels (maintains aspect)')
@@ -16,7 +16,7 @@ args = vars(parser.parse_args())
 
 # Configure VideoCapture class instance for using camera or file input.
 if not args.get('file', False):
-    capture = cv2.VideoCapture('Example4.mp4')
+    capture = cv2.VideoCapture(0)
 else:
     capture = cv2.VideoCapture(args['file'])
 
@@ -43,7 +43,7 @@ if color == 'rgb':
 else:
     lineGray, = ax.plot(np.arange(bins), np.zeros((bins,1)), c='k', lw=lw)
 ax.set_xlim(0, bins-1)
-ax.set_ylim(0, 1)
+ax.set_ylim(0, 10000)
 plt.ion()
 plt.show()
 
@@ -67,16 +67,17 @@ while True:
     if color == 'rgb':
         cv2.imshow('RGB', frame)
         (b, g, r) = cv2.split(frame)
-        histogramR = cv2.calcHist([r], [0], None, [bins], [0, 255]) / numPixels
-        histogramG = cv2.calcHist([g], [0], None, [bins], [0, 255]) / numPixels
-        histogramB = cv2.calcHist([b], [0], None, [bins], [0, 255]) / numPixels
+        histogramR = cv2.calcHist([r], [0], None, [bins], [0, 255])
+        histogramG = cv2.calcHist([g], [0], None, [bins], [0, 255]) 
+        histogramB = cv2.calcHist([b], [0], None, [bins], [0, 255]) 
         lineR.set_ydata(histogramR)
         lineG.set_ydata(histogramG)
         lineB.set_ydata(histogramB)
     else:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         cv2.imshow('Grayscale', gray)
-        histogram = cv2.calcHist([gray], [0], None, [bins], [0, 255]) / numPixels
+        histogram = cv2.calcHist([gray], [0], None, [bins], [0, 255]) 
+        print(histogram)
         lineGray.set_ydata(histogram)
     fig.canvas.draw()
     
