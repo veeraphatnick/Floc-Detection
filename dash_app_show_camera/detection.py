@@ -7,6 +7,7 @@ import time
 import plotly.plotly as py
 import plotly.graph_objs as go
 import csv
+import os
 
 def edge_floc(roi, cnt, count):
     cv2.drawContours(roi, [cnt], -1, (0, 0, 255), 3)
@@ -36,6 +37,7 @@ def nothing(x):
 
 def detection(ret,frame):
     count = 0
+    record = 0
     floc_size = 0 
     roi = frame
     rows, cols, _ = roi.shape
@@ -54,6 +56,13 @@ def detection(ret,frame):
     # Find Contours
     _, contours, _ = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = sorted(contours, key=lambda x: cv2.contourArea(x), reverse=True)
+    '''
+    histogram = cv2.calcHist([gray_roi], [0], None, [256], [0, 255]) 
+    histogram = np.array(histogram)
+
+    df = pd.DataFrame(data=histogram[:,0:1],columns=['histogram'])
+    df.to_csv('histogram.csv')
+    '''
 
     # Drew Contours
     for cnt in contours:
@@ -63,19 +72,37 @@ def detection(ret,frame):
         avg_floc_size = floc_size/count
     else:
         avg_floc_size = 0
-            
+
     date_time = datetime.datetime.now()
 
-    time_t = date_time.strftime("%X")
-    with open('data.txt', 'r') as textFile:
-        lines = textFile.read().splitlines()
-        last_line = lines[-1].split(',')
-        if(last_line[0] != time_t):
-            with open('data.txt', 'a') as textFile_w:
-                textFile_w.write(time_t)
-                textFile_w.write(','+str(count))
-                textFile_w.write(','+str(int(avg_floc_size))+'\n')
-            textFile_w.close()
-    textFile.close()
-        
+    #time_t = date_time.strftime("%X")
+    time_t = date_time
+    time_t = str(time_t).split('.')
+    
+    if (os.stat('data.txt').st_size == 0):
+        record += 1
+        with open('data.txt', 'a') as textFile_w:
+            textFile_w.write(str(record))
+            textFile_w.write(','+str(time_t[0]))
+            textFile_w.write(','+str(count))
+            textFile_w.write(','+str(int(avg_floc_size))+'\n')
+    else :
+        with open('data.txt', 'r') as textFile:
+            lines = textFile.read().splitlines()
+            last_line = lines[-1].split(',')
+            record = int(last_line[0])+1
+            last_line = last_line[1].split('.')
+            if(str(last_line[0]) != str(time_t[0])):
+                with open('data.txt', 'a') as textFile_w:
+                    textFile_w.write(str(record))
+                    textFile_w.write(','+str(time_t[0]))
+                    textFile_w.write(','+str(count))
+                    textFile_w.write(','+str(int(avg_floc_size))+'\n')
+                textFile_w.close()
+        textFile.close()
+    
+    
+
+
+
     return roi, threshold

@@ -6,7 +6,7 @@ import cv2
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file',
     help='Path to video file (if not using camera)')
-parser.add_argument('-c', '--color', type=str, default='rgb',
+parser.add_argument('-c', '--color', type=str, default='gray',
     help='Color space: "gray" (default) or "rgb"')
 parser.add_argument('-b', '--bins', type=int, default=256,
     help='Number of bins per channel (default 16)')
@@ -53,14 +53,14 @@ while True:
 
     if not grabbed:
         break
-    '''
+    
     # Resize frame to width, if specified.
     if resizeWidth > 0:
         (height, width) = frame.shape[:2]
         resizeHeight = int(float(resizeWidth / width) * height)
         frame = cv2.resize(frame, (resizeWidth, resizeHeight),
             interpolation=cv2.INTER_AREA)
-            '''
+            
     # Normalize histograms based on number of pixels per frame.
     numPixels = np.prod(frame.shape[:2])
     
